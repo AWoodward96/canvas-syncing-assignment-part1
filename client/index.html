@@ -2,12 +2,56 @@
 <html lang="en">
 <head>
     <script src="https://npmcdn.com/babel-core@5.8.38/browser.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script type="text/babel" >
         "use strict";
-    
+        let socket; 
+
+
+        const setupSocket = () => {
+            socket.on('updatePara', (data) => {
+               console.log(data);
+                const message = data.message;
+                document.querySelector("#myPara").innerHTML = message;
+            });
+            
+            socket.on('clearPara', (data)=>{
+               document.querySelector("#myPara").innerHTML = ""; 
+            });
+        }
+        
+        const sendMessage = () =>{ 
+            let messageData = {
+              message: 5  
+            };
+            
+            socket.emit('increment',messageData);
+        }
+        
+ 
+        
+        const init = () =>{
+            socket = io.connect(); 
+            
+            setupSocket();
+            
+            setInterval(sendMessage,3000); 
+            document.getElementById('Clear').onclick = function Clear(){
+                socket.emit('clear');
+            }
+        }
+        
+
+        window.onload = init;
+
+
     </script>
 </head>
 <body>
 
+    <p>Update this: </p>
+    <div id="myPara"></div> 
+    <button id="Clear" onclick="Clear()">Clear Value</button>
+    
 </body>
 </html>
